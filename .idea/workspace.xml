@@ -4,28 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="845ded8f-3de6-4622-adc7-562e1bb12c30" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/controller/AuthController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/controller/CustomerController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/controller/TransactionController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/entity/Admin.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/entity/Customer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/entity/Transaction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/repository/AdminRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/repository/CustomerRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/repository/TransactionRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/service/AdminService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/service/CustomerService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/service/TransactionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/APIs/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/APIs/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/dto/dto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/entity/entity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/repository/repo.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/APIs/src/main/java/com/flourmillapi/APIs/service/service.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/APIs/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/APIs/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/APIs/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/APIs/src/main/resources/application.yml" afterDir="false" />
-    </list>
+    <list default="true" id="845ded8f-3de6-4622-adc7-562e1bb12c30" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
