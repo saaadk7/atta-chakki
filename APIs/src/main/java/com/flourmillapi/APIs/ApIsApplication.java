@@ -1,13 +1,13 @@
-package com.flour_mill_app;
+package com.flourmillapi.APIs;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class FlourMillBackendApplication {
+public class ApIsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FlourMillBackendApplication.class, args);
+		SpringApplication.run(ApIsApplication.class, args);
 	}
 
 }
