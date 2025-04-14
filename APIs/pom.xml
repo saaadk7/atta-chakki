@@ -8,10 +8,10 @@
 		<version>3.4.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.flour-mill-app</groupId>
-	<artifactId>flour-mill-backend</artifactId>
+	<groupId>com.flourmillapi</groupId>
+	<artifactId>APIs</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>flour-mill-backend</name>
+	<name>APIs</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
