@@ -17,8 +17,9 @@ public class CustomerService {
 
     // 1. if the cutomer is not exist in the Database its creates new
     // 2. if the customer is exist in the db then it will update that customer
-    public Customer saveCustomer(Customer customer) {
-        return customerRepository.save(customer);
+    public Optional<Customer> addCustomer(Customer customer) {
+        customerRepository.save(customer);
+        return null;
     }
 
     // 1. it will return the all cutomer list
@@ -29,5 +30,24 @@ public class CustomerService {
     // 1. it will return the customer by its ID
     public Optional<Customer> getCustomerById(Long id) {
         return customerRepository.findById(id);
+    }
+
+
+
+    public Customer updateCustomer(Long id,Customer customer) {
+        Optional<Customer> existCustomer = customerRepository.findById(id);
+        if (existCustomer.isPresent()) {
+            Customer updatedCustomer = existCustomer.get();
+            updatedCustomer.setName(customer.getName());
+            updatedCustomer.setAddress(customer.getAddress());
+            updatedCustomer.setPhone(customer.getPhone());
+
+            return customerRepository.save(updatedCustomer);
+
+        } else {
+            return null;
+        }
+
+
     }
 }

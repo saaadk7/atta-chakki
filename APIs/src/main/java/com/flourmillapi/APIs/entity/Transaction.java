@@ -1,5 +1,6 @@
 package com.flourmillapi.APIs.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,15 +23,20 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
 
+    private String flourType; // ghehoon, Bajra etc..
+
     private LocalDateTime inTime;
     private LocalDateTime outTime;
 
-    private String flourType; // ghehoon, Bajra etc..
-    private Float quantity; // in kg
-    private Float unitPrice; // per kg
-    private Float total;
+
+    private double quantity; // in kg
+    private double total;
+    private double unitPrice; // per kg
+//    private double total;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id")
+    @JsonBackReference
     private Customer customer;
+
 }

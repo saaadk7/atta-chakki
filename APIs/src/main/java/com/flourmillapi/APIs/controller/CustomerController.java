@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-//@RequestMapping("/api")
+@RequestMapping("/api")
 //@CrossOrigin
 public class CustomerController {
 
@@ -19,8 +19,13 @@ public class CustomerController {
 
     // 1. its calls the service layer to add cutomer
     @PostMapping("/customers")
-    public Customer addCustomer(@RequestBody Customer customer){
-        return customerService.saveCustomer(customer);
+    public Optional<Customer> addCustomer(@RequestBody Customer customer) {
+       return customerService.addCustomer(customer);
+    }
+
+    @PutMapping("/customers/{id}")
+    public Customer updateCustomer(@PathVariable Long id,@RequestBody  Customer customer ){
+         return customerService.updateCustomer(id,customer);
     }
 
     // 1. its call the service layer to fetch all customers
