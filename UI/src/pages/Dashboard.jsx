@@ -27,6 +27,13 @@ const Dashboard = () => {
     }
   };
 
+  const refreshData = async () => {
+    if (selectedCustomer) {
+      const res = await api.getTransactionsByCustomer(selectedCustomer.id);
+      setTransactions(res.data);
+    }
+  };
+
   // const handleCustomerSelect = async (customer) => {
   //   setSelectedCustomer(customer);
   //   try {
@@ -66,9 +73,15 @@ const Dashboard = () => {
         onSelect={handleCustomerSelect}
         selectedId={selectedCustomer?.id}
       />
-      {/* <TransactionList transactions={transactions} /> */}
-      
-      <TransactionList transactions={selectedCustomer?.transactions || []} />
+
+      {/* <TransactionList transactions={selectedCustomer?.transactions || []} />
+       */}
+
+      <TransactionList
+        transactions={selectedCustomer?.transactions || []}
+        customerId={selectedCustomer?.id}
+        refreshData={refreshData}
+      />
     </div>
   );
 };

@@ -1,144 +1,433 @@
+import React, { useState, useEffect } from "react";
+import api from "../services/api";
 
+const TransactionList = ({ customerId }) => {
+  const [transactions, setTransactions] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [notification, setNotification] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    flourType: "",
+    inTime: "",
+    outTime: "",
+    quantity: "",
+    unitPrice: "",
+  });
 
-// import React from "react";
+  // Fetch transactions when customerId changes
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      if (customerId) {
+        setIsLoading(true);
+        try {
+          const res = await api.getTransactionsByCustomer(customerId);
+          setTransactions(res.data);
+        } catch (error) {
+          showNotification("Failed to fetch transactions", "error");
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+    fetchTransactions();
+  }, [customerId]);
 
-// const TransactionList = ({ transactions }) => {
-//   if (!transactions?.length) {
-//     return (
-//       <div className="w-full md:w-2/3 p-4 bg-white rounded-lg shadow">
-//         {" "}
-//         <p className="text-gray-500">No transactions found.</p>{" "}
-//       </div>
-//     );
-//   }
+  // Show notification message
+  const showNotification = (message, type = "success") => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
-//   return (
-//     <div className="w-full md:w-2/3 p-4 bg-white rounded-lg shadow overflow-auto">
-//       {" "}
-//       <h2 className="text-xl font-bold mb-4">Transactions</h2>{" "}
-//       <table className="min-w-full text-sm text-left text-gray-700">
-//         {" "}
-//         <thead className="bg-gray-100">
-//           {" "}
-//           <tr>
-//             {" "}
-//             <th className="px-4 py-2">Flour Type</th>{" "}
-//             <th className="px-4 py-2">In Time</th>{" "}
-//             <th className="px-4 py-2">Out Time</th>{" "}
-//             <th className="px-4 py-2">Quantity</th>{" "}
-//             <th className="px-4 py-2">Unit Price</th>{" "}
-//             <th className="px-4 py-2">Total</th>{" "}
-//           </tr>{" "}
-//         </thead>{" "}
-//         {/* <tbody>
-//           {" "}
-//           {transactions.map((t) => (
-//             <tr key={t.id} className="border-b">
-//               {" "}
-//               <td className="px-4 py-2">{t.flour_type}</td>{" "}
-//               <td className="px-4 py-2">{t.in_time}</td>{" "}
-//               <td className="px-4 py-2">{t.out_time}</td>{" "}
-//               <td className="px-4 py-2">{t.quantity}</td>{" "}
-//               <td className="px-4 py-2">₹ {t.unit_price}</td>{" "}
-//               <td className="px-4 py-2">₹ {t.total}</td>{" "}
-//             </tr>
-//           ))}{" "}
-//         </tbody>{" "} */}
-//         // In the table body section:
-//         <tbody>
-//           {transactions.map((t) => (
-//             <tr key={t.id} className="border-b">
-//               <td className="px-4 py-2">{t.flourType}</td>
-//               <td className="px-4 py-2">
-//                 {new Date(t.inTime).toLocaleString()}
-//               </td>
-//               <td className="px-4 py-2">
-//                 {new Date(t.outTime).toLocaleString()}
-//               </td>
-//               <td className="px-4 py-2">{t.quantity}</td>
-//               <td className="px-4 py-2">₹ {t.unitPrice}</td>
-//               <td className="px-4 py-2">₹ {t.total}</td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>{" "}
-//     </div>
-//   );
-// };
-
-// export default TransactionList;
-
-
-// src/components/TransactionList.jsx
-import React from "react";
-
-const TransactionList = ({ transactions }) => {
-  // Format date for clean display
+  // Format date for display
   const formatDateTime = (dateString) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
-    return date.toLocaleString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+    return date.toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     });
   };
 
-  // Format currency for Indian Rupees
+  // Format currency
   const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) return "₹ 0";
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     }).format(amount);
   };
 
-  if (!transactions?.length) {
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle Add Transaction
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.addTransaction({
+        ...formData,
+        quantity: parseFloat(formData.quantity),
+        unitPrice: parseFloat(formData.unitPrice),
+        customer: { id: customerId },
+      });
+
+      // Update local state immediately
+      setTransactions((prev) => [...prev, response.data]);
+      showNotification("Transaction added successfully!");
+      setShowAddForm(false);
+      setFormData({
+        flourType: "",
+        inTime: "",
+        outTime: "",
+        quantity: "",
+        unitPrice: "",
+      });
+    } catch (error) {
+      showNotification("Failed to add transaction", "error");
+      console.error("Error adding transaction:", error);
+    }
+  };
+
+  // Handle Update Transaction
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.updateTransaction(editingId, {
+        ...formData,
+        quantity: parseFloat(formData.quantity),
+        unitPrice: parseFloat(formData.unitPrice),
+      });
+
+      // Update local state immediately
+      setTransactions((prev) =>
+        prev.map((txn) => (txn.id === editingId ? response.data : txn))
+      );
+      showNotification("Transaction updated successfully!");
+      setEditingId(null);
+    } catch (error) {
+      showNotification("Failed to update transaction", "error");
+      console.error("Error updating transaction:", error);
+    }
+  };
+
+  // Handle Delete Transaction
+  const handleDelete = async (id) => {
+    try {
+      await api.deleteTransaction(id);
+
+      // Update local state immediately
+      setTransactions((prev) => prev.filter((txn) => txn.id !== id));
+      showNotification("Transaction deleted successfully!");
+    } catch (error) {
+      showNotification("Failed to delete transaction", "error");
+      console.error("Error deleting transaction:", error);
+    }
+  };
+
+  // Set form data when editing
+  const startEditing = (txn) => {
+    setEditingId(txn.id);
+    setFormData({
+      flourType: txn.flourType,
+      inTime: txn.inTime.split(".")[0], // Remove milliseconds
+      outTime: txn.outTime.split(".")[0],
+      quantity: txn.quantity,
+      unitPrice: txn.unitPrice,
+    });
+  };
+
+  if (isLoading) {
     return (
       <div className="w-full md:w-2/3 p-4 bg-white rounded-lg shadow">
-        <p className="text-gray-500">No transactions found for this customer.</p>
+        <p className="text-gray-500">Loading transactions...</p>
       </div>
     );
   }
 
   return (
     <div className="w-full md:w-2/3 p-4 bg-white rounded-lg shadow overflow-auto">
-      <h2 className="text-xl font-bold mb-4">Transaction History</h2>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-sm text-left text-gray-700">
-          <thead className="bg-gray-100 text-gray-700 uppercase">
-            <tr>
-              <th className="px-4 py-3"> ID</th>
-              <th className="px-4 py-3">Flour Type</th>
-              <th className="px-4 py-3">In Time</th>
-              <th className="px-4 py-3">Out Time</th>
-              <th className="px-4 py-3 text-right">Qty (kg)</th>
-              <th className="px-4 py-3 text-right">Rate (₹/kg)</th>
-              <th className="px-4 py-3 text-right">Amount (₹)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((txn) => (
-              <tr key={txn.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-3 font-mono text-gray-500">{txn.id}</td>
-                <td className="px-4 py-3 font-medium">{txn.flourType}</td>
-                <td className="px-4 py-3">{formatDateTime(txn.inTime)}</td>
-                <td className="px-4 py-3">{formatDateTime(txn.outTime)}</td>
-                <td className="px-4 py-3 text-right">{txn.quantity}</td>
-                <td className="px-4 py-3 text-right">{formatCurrency(txn.unitPrice)}</td>
-                <td className="px-4 py-3 text-right font-semibold">
-                  {formatCurrency(txn.total)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Notification */}
+      {notification && (
+        <div
+          className={`fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 ${
+            notification.type === "error"
+              ? "bg-red-100 text-red-800"
+              : "bg-green-100 text-green-800"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
+
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Transaction History</h2>
+        {!editingId && (
+          <button
+            onClick={() => setShowAddForm(true)}
+            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
+            Add Transaction
+          </button>
+        )}
       </div>
+
+      {/* Add Transaction Form */}
+      {showAddForm && (
+        <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+          <h3 className="text-lg font-semibold mb-3">Add New Transaction</h3>
+          <form onSubmit={handleAdd}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Flour Type
+                </label>
+                <input
+                  type="text"
+                  name="flourType"
+                  value={formData.flourType}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Quantity (kg)
+                </label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value={formData.quantity}
+                  onChange={handleInputChange}
+                  step="0.01"
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Unit Price (₹)
+                </label>
+                <input
+                  type="number"
+                  name="unitPrice"
+                  value={formData.unitPrice}
+                  onChange={handleInputChange}
+                  step="0.01"
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  In Time
+                </label>
+                <input
+                  type="datetime-local"
+                  name="inTime"
+                  value={formData.inTime}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Out Time
+                </label>
+                <input
+                  type="datetime-local"
+                  name="outTime"
+                  value={formData.outTime}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                type="button"
+                onClick={() => setShowAddForm(false)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              >
+                Save Transaction
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Edit Transaction Form */}
+      {editingId && (
+        <div className="mb-6 p-4 border rounded-lg bg-blue-50">
+          <h3 className="text-lg font-semibold mb-3">Edit Transaction</h3>
+          <form onSubmit={handleUpdate}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Flour Type
+                </label>
+                <input
+                  type="text"
+                  name="flourType"
+                  value={formData.flourType}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Quantity (kg)
+                </label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value={formData.quantity}
+                  onChange={handleInputChange}
+                  step="0.01"
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Unit Price (₹)
+                </label>
+                <input
+                  type="number"
+                  name="unitPrice"
+                  value={formData.unitPrice}
+                  onChange={handleInputChange}
+                  step="0.01"
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  In Time
+                </label>
+                <input
+                  type="datetime-local"
+                  name="inTime"
+                  value={formData.inTime}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Out Time
+                </label>
+                <input
+                  type="datetime-local"
+                  name="outTime"
+                  value={formData.outTime}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+            </div>
+            <div className="mt-4 flex justify-end space-x-2">
+              <button
+                type="button"
+                onClick={() => setEditingId(null)}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Update Transaction
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Transactions Table */}
+      {!showAddForm && !editingId && (
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-left text-gray-700">
+            <thead className="bg-gray-100 text-gray-700 uppercase">
+              <tr>
+                <th className="px-4 py-3">Transaction Id</th>
+                <th className="px-4 py-3">Flour Type</th>
+                <th className="px-4 py-3">In Time</th>
+                <th className="px-4 py-3">Out Time</th>
+                <th className="px-4 py-3 text-right">Qty (kg)</th>
+                <th className="px-4 py-3 text-right">Rate per(₹/kg)</th>
+                <th className="px-4 py-3 text-right">Total Amount (₹)</th>
+                <th className="px-4 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.length > 0 ? (
+                transactions.map((txn) => (
+                  <tr key={txn.id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium">{txn.id}</td>
+                    <td className="px-4 py-3 font-medium">{txn.flourType}</td>
+                    <td className="px-4 py-3">{formatDateTime(txn.inTime)}</td>
+                    <td className="px-4 py-3">{formatDateTime(txn.outTime)}</td>
+                    <td className="px-4 py-3 text-right">{txn.quantity}</td>
+                    <td className="px-4 py-3 text-right">
+                      {formatCurrency(txn.unitPrice)}
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold">
+                      {formatCurrency(txn.total)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => startEditing(txn)}
+                        className="px-2 py-1 text-sm text-white bg-blue-500 rounded hover:bg-blue-600 mr-2"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(txn.id)}
+                        className="px-2 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="8"
+                    className="px-4 py-3 text-center text-gray-500"
+                  >
+                    No transactions found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
