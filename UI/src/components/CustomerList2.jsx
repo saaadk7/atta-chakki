@@ -1,7 +1,12 @@
+
+
+
+// // heylo
+
 // import React, { useState, useEffect } from "react";
 // import api from "../services/api";
 
-// const CustomerList = () => {
+// const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
 //   const [customers, setCustomers] = useState([]);
 //   const [showAddForm, setShowAddForm] = useState(false);
 //   const [editingId, setEditingId] = useState(null);
@@ -13,7 +18,6 @@
 //     phone: "",
 //   });
 
-//   // Load customers on component mount
 //   useEffect(() => {
 //     const loadCustomers = async () => {
 //       try {
@@ -28,62 +32,43 @@
 //     loadCustomers();
 //   }, []);
 
-//   // Notification handler
 //   const showNotification = (message, type = "success") => {
 //     setNotification({ message, type });
 //     setTimeout(() => setNotification(null), 3000);
 //   };
 
-//   // Handle input changes
 //   const handleInputChange = (e) => {
 //     const { name, value } = e.target;
 //     setFormData((prev) => ({ ...prev, [name]: value }));
 //   };
 
-//   // Add new customer
 //   const handleAdd = async (e) => {
 //     e.preventDefault();
 //     try {
-//       const response = await api.addCustomer({
-//         address: formData.address,
-//         name: formData.name,
-//         phone: formData.phone,
-//       });
+//       const response = await api.addCustomer(formData);
 //       setCustomers((prev) => [...prev, response.data]);
 //       showNotification("Customer added successfully!");
 //       setShowAddForm(false);
 //       setFormData({ address: "", name: "", phone: "" });
 //     } catch (error) {
-//       showNotification(
-//         error.response?.data?.message || "Failed to add customer",
-//         "error"
-//       );
+//       showNotification("Failed to add customer", "error");
 //     }
 //   };
 
-//   // Update customer
 //   const handleUpdate = async (e) => {
 //     e.preventDefault();
 //     try {
-//       const response = await api.updateCustomer(editingId, {
-//         address: formData.address,
-//         name: formData.name,
-//         phone: formData.phone,
-//       });
+//       const response = await api.updateCustomer(editingId, formData);
 //       setCustomers((prev) =>
 //         prev.map((c) => (c.id === editingId ? response.data : c))
 //       );
 //       showNotification("Customer updated successfully!");
 //       setEditingId(null);
 //     } catch (error) {
-//       showNotification(
-//         error.response?.data?.message || "Failed to update customer",
-//         "error"
-//       );
+//       showNotification("Failed to update customer", "error");
 //     }
 //   };
 
-//   // Delete customer
 //   const handleDelete = async (id) => {
 //     if (!window.confirm("Are you sure you want to delete this customer?"))
 //       return;
@@ -91,15 +76,14 @@
 //       await api.deleteCustomer(id);
 //       setCustomers((prev) => prev.filter((c) => c.id !== id));
 //       showNotification("Customer deleted successfully!");
+//       if (selectedCustomerId === id) {
+//         onSelectCustomer(null);
+//       }
 //     } catch (error) {
-//       showNotification(
-//         error.response?.data?.message || "Failed to delete customer",
-//         "error"
-//       );
+//       showNotification("Failed to delete customer", "error");
 //     }
 //   };
 
-//   // Start editing a customer
 //   const startEditing = (customer) => {
 //     setEditingId(customer.id);
 //     setFormData({
@@ -115,7 +99,6 @@
 
 //   return (
 //     <div className="bg-white shadow-md rounded-xl p-4 h-full">
-//       {/* Notification */}
 //       {notification && (
 //         <div
 //           className={`fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 ${
@@ -128,7 +111,6 @@
 //         </div>
 //       )}
 
-//       {/* Header */}
 //       <div className="flex justify-between items-center mb-4">
 //         <h2 className="text-xl font-bold">Customers</h2>
 //         {!editingId && (
@@ -141,7 +123,6 @@
 //         )}
 //       </div>
 
-//       {/* Add Form */}
 //       {showAddForm && (
 //         <div className="mb-6 p-4 border rounded-lg bg-gray-50">
 //           <h3 className="text-lg font-semibold mb-3">Add New Customer</h3>
@@ -206,7 +187,6 @@
 //         </div>
 //       )}
 
-//       {/* Edit Form */}
 //       {editingId && (
 //         <div className="mb-6 p-4 border rounded-lg bg-blue-50">
 //           <h3 className="text-lg font-semibold mb-3">Edit Customer</h3>
@@ -271,15 +251,19 @@
 //         </div>
 //       )}
 
-//       {/* Customers List */}
 //       <ul className="overflow-auto max-h-[70vh]">
 //         {customers.length > 0 ? (
 //           customers.map((customer) => (
 //             <li
 //               key={customer.id}
-//               className={`p-3 mb-2 rounded-md ${
-//                 editingId === customer.id ? "bg-blue-50" : "hover:bg-gray-100"
+//               className={`p-3 mb-2 rounded-md cursor-pointer ${
+//                 editingId === customer.id
+//                   ? "bg-blue-50"
+//                   : selectedCustomerId === customer.id
+//                   ? "bg-blue-100 border-l-4 border-blue-500"
+//                   : "hover:bg-gray-100"
 //               }`}
+//               onClick={() => onSelectCustomer(customer.id)}
 //             >
 //               <div className="flex justify-between items-start">
 //                 <div>
@@ -291,13 +275,19 @@
 //                 </div>
 //                 <div className="flex space-x-2">
 //                   <button
-//                     onClick={() => startEditing(customer)}
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       startEditing(customer);
+//                     }}
 //                     className="text-blue-500 hover:text-blue-700 text-sm px-2 py-1"
 //                   >
 //                     Edit
 //                   </button>
 //                   <button
-//                     onClick={() => handleDelete(customer.id)}
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       handleDelete(customer.id);
+//                     }}
 //                     className="text-red-500 hover:text-red-700 text-sm px-2 py-1"
 //                   >
 //                     Delete
@@ -329,8 +319,6 @@
 // export default CustomerList;
 
 
-// heylo
-
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
 
@@ -345,6 +333,9 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
     name: "",
     phone: "",
   });
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [customerToDelete, setCustomerToDelete] = useState(null);
 
   useEffect(() => {
     const loadCustomers = async () => {
@@ -397,18 +388,24 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this customer?"))
-      return;
+  const confirmDelete = (id) => {
+    setCustomerToDelete(id);
+    setShowConfirmModal(true);
+  };
+
+  const deleteConfirmed = async () => {
     try {
-      await api.deleteCustomer(id);
-      setCustomers((prev) => prev.filter((c) => c.id !== id));
+      await api.deleteCustomer(customerToDelete);
+      setCustomers((prev) => prev.filter((c) => c.id !== customerToDelete));
       showNotification("Customer deleted successfully!");
-      if (selectedCustomerId === id) {
+      if (selectedCustomerId === customerToDelete) {
         onSelectCustomer(null);
       }
     } catch (error) {
       showNotification("Failed to delete customer", "error");
+    } finally {
+      setShowConfirmModal(false);
+      setCustomerToDelete(null);
     }
   };
 
@@ -426,7 +423,7 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
   }
 
   return (
-    <div className="bg-white shadow-md rounded-xl p-4 h-full">
+    <div className="bg-white shadow-md rounded-xl p-4 h-full relative">
       {notification && (
         <div
           className={`fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 ${
@@ -436,6 +433,34 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
           }`}
         >
           {notification.message}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-[90%] max-w-md">
+            <h2 className="text-lg font-bold mb-4 text-gray-800">
+              Confirm Deletion
+            </h2>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this customer?
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deleteConfirmed}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -451,6 +476,7 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
         )}
       </div>
 
+      {/* Add Form */}
       {showAddForm && (
         <div className="mb-6 p-4 border rounded-lg bg-gray-50">
           <h3 className="text-lg font-semibold mb-3">Add New Customer</h3>
@@ -515,6 +541,7 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
         </div>
       )}
 
+      {/* Edit Form */}
       {editingId && (
         <div className="mb-6 p-4 border rounded-lg bg-blue-50">
           <h3 className="text-lg font-semibold mb-3">Edit Customer</h3>
@@ -579,6 +606,7 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
         </div>
       )}
 
+      {/* Customer List */}
       <ul className="overflow-auto max-h-[70vh]">
         {customers.length > 0 ? (
           customers.map((customer) => (
@@ -614,7 +642,7 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleDelete(customer.id);
+                      confirmDelete(customer.id);
                     }}
                     className="text-red-500 hover:text-red-700 text-sm px-2 py-1"
                   >
