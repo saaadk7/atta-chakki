@@ -1,16 +1,20 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
+
+import React from "react";
 import Dashboard from "./pages/Dashboard";
+import LoginForm from "./components/LoginForm";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      
-      </Routes>
-    </Router>
+    <div className="App">
+      <Router>
+        <Routes>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<LoginForm />} />
+          {/* <Route path="/" element={<Dashboard />} /> */}
+        </Routes>
+      </Router>
+    </div>
   );
 };
 
