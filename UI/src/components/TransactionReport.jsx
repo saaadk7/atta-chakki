@@ -431,12 +431,15 @@ const TransactionReport = () => {
         flourSummary[txn.flourType] = {
           quantity: 0,
           revenue: 0,
+          totalAmount: 0,
           electricityUnits: 0
         };
       }
-      const transactionRevenue = parseFloat(txn.quantity) * parseFloat(txn.unitPrice) * 1.3;
+      const transactionAmount = parseFloat(txn.quantity) * parseFloat(txn.unitPrice);
+      const transactionRevenue = transactionAmount * 1.3;
       flourSummary[txn.flourType].quantity += parseFloat(txn.quantity);
       flourSummary[txn.flourType].revenue += transactionRevenue;
+      flourSummary[txn.flourType].totalAmount += transactionAmount;
       flourSummary[txn.flourType].electricityUnits += Math.floor(parseFloat(txn.quantity) / 5);
       
       // Weekly summary
@@ -448,12 +451,14 @@ const TransactionReport = () => {
           transactions: [],
           totalQuantity: 0,
           revenue: 0,
+          totalAmount: 0,
           totalElectricity: 0
         };
       }
       weeklyData[weekNumber].transactions.push(txn);
       weeklyData[weekNumber].totalQuantity += parseFloat(txn.quantity);
       weeklyData[weekNumber].revenue += transactionRevenue;
+      weeklyData[weekNumber].totalAmount += transactionAmount;
       weeklyData[weekNumber].totalElectricity += Math.floor(parseFloat(txn.quantity) / 5);
     });
 
@@ -461,6 +466,7 @@ const TransactionReport = () => {
       flourType,
       quantity: flourSummary[flourType].quantity,
       revenue: flourSummary[flourType].revenue,
+      totalAmount: flourSummary[flourType].totalAmount,
       electricityUnits: flourSummary[flourType].electricityUnits
     })));
 
@@ -545,6 +551,7 @@ const TransactionReport = () => {
       head: [["Metric", "Value"]],
       body: [
         ["Total Quantity Processed", `${week.totalQuantity} kg`],
+        ["Total Amount", formatCurrency(week.totalAmount)],
         ["Total Revenue (including 30%)", formatCurrency(week.revenue)],
         ["Total Electricity Units", `${week.totalElectricity} units (5kg = 1 unit)`]
       ],
@@ -555,7 +562,7 @@ const TransactionReport = () => {
     // Transactions table
     doc.autoTable({
       startY: doc.lastAutoTable.finalY + 15,
-      head: [["ID", "Customer", "Flour Type", "Date", "Qty (kg)", "Unit Price", "Revenue"]],
+      head: [["ID", "Customer", "Flour Type", "Date", "Qty (kg)", "Unit Price", "Amount", "Revenue"]],
       body: week.transactions.map(txn => [
         txn.id,
         txn.customerName,
@@ -563,6 +570,7 @@ const TransactionReport = () => {
         formatDateTime(txn.inTime || txn.outTime),
         txn.quantity,
         formatCurrency(txn.unitPrice),
+        formatCurrency(txn.unitPrice * txn.quantity),
         formatCurrency(txn.unitPrice * txn.quantity * 1.3)
       ]),
       styles: { fontSize: 8 },
@@ -575,22 +583,26 @@ const TransactionReport = () => {
       if (!flourSummaryForWeek[txn.flourType]) {
         flourSummaryForWeek[txn.flourType] = {
           quantity: 0,
+          amount: 0,
           revenue: 0,
           electricityUnits: 0
         };
       }
-      const transactionRevenue = parseFloat(txn.quantity) * parseFloat(txn.unitPrice) * 1.3;
+      const transactionAmount = parseFloat(txn.quantity) * parseFloat(txn.unitPrice);
+      const transactionRevenue = transactionAmount * 1.3;
       flourSummaryForWeek[txn.flourType].quantity += parseFloat(txn.quantity);
+      flourSummaryForWeek[txn.flourType].amount += transactionAmount;
       flourSummaryForWeek[txn.flourType].revenue += transactionRevenue;
       flourSummaryForWeek[txn.flourType].electricityUnits += Math.floor(parseFloat(txn.quantity) / 5);
     });
 
     doc.autoTable({
       startY: doc.lastAutoTable.finalY + 15,
-      head: [["Flour Type", "Qty (kg)", "Revenue (+30%)", "Electricity Units"]],
+      head: [["Flour Type", "Qty (kg)", "Amount", "Revenue (+30%)", "Electricity Units"]],
       body: Object.keys(flourSummaryForWeek).map(flourType => [
         flourType,
         flourSummaryForWeek[flourType].quantity,
+        formatCurrency(flourSummaryForWeek[flourType].amount),
         formatCurrency(flourSummaryForWeek[flourType].revenue),
         flourSummaryForWeek[flourType].electricityUnits
       ]),
@@ -626,7 +638,7 @@ const TransactionReport = () => {
       )}
 
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">All Transactions</h2>
+        <h2 className="text-xl font-bold">Weekly Transactions</h2>
         {weeklySummary.length > 0 && (
           <div className="flex items-center gap-4">
             <select 
@@ -655,10 +667,14 @@ const TransactionReport = () => {
           <h3 className="text-lg font-semibold mb-2">
             Week {selectedWeek.weekNumber} Summary ({formatDate(selectedWeek.startDate)} - {formatDate(selectedWeek.endDate)})
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             <div className="bg-white p-4 rounded shadow">
               <h4 className="font-medium text-gray-500">Total Quantity</h4>
               <p className="text-2xl font-bold">{selectedWeek.totalQuantity} kg</p>
+            </div>
+            <div className="bg-white p-4 rounded shadow">
+              <h4 className="font-medium text-gray-500">Total Amount</h4>
+              <p className="text-2xl font-bold">{formatCurrency(selectedWeek.totalAmount)}</p>
             </div>
             <div className="bg-white p-4 rounded shadow">
               <h4 className="font-medium text-gray-500">Total Revenue (+30%)</h4>
@@ -677,24 +693,22 @@ const TransactionReport = () => {
             <table className="min-w-full text-sm text-left text-gray-700">
               <thead className="bg-gray-100 text-gray-700 uppercase">
                 <tr>
-                  <th className="px-4 py-3">Transaction ID</th>
-                  <th className="px-4 py-3">Customer</th>
                   <th className="px-4 py-3">Flour Type</th>
                   <th className="px-4 py-3">Date/Time</th>
                   <th className="px-4 py-3">Quantity (kg)</th>
                   <th className="px-4 py-3">Unit Price</th>
+                  <th className="px-4 py-3">Amount</th>
                   <th className="px-4 py-3">Revenue (+30%)</th>
                 </tr>
               </thead>
               <tbody>
                 {selectedWeek.transactions.map((txn) => (
                   <tr key={txn.id} className="border-b">
-                    <td className="px-4 py-3">{txn.id}</td>
-                    <td className="px-4 py-3">{txn.customerName}</td>
                     <td className="px-4 py-3">{txn.flourType}</td>
                     <td className="px-4 py-3">{formatDateTime(txn.inTime || txn.outTime)}</td>
                     <td className="px-4 py-3">{txn.quantity}</td>
                     <td className="px-4 py-3">{formatCurrency(txn.unitPrice)}</td>
+                    <td className="px-4 py-3">{formatCurrency(txn.unitPrice * txn.quantity)}</td>
                     <td className="px-4 py-3 text-green-600">
                       {formatCurrency(txn.unitPrice * txn.quantity * 1.3)}
                     </td>
@@ -711,6 +725,7 @@ const TransactionReport = () => {
                 <tr>
                   <th className="py-2 px-4 border">Flour Type</th>
                   <th className="py-2 px-4 border">Quantity (kg)</th>
+                  <th className="py-2 px-4 border">Total Amount</th>
                   <th className="py-2 px-4 border">Revenue (+30%)</th>
                   <th className="py-2 px-4 border">Electricity Units</th>
                 </tr>
@@ -724,6 +739,7 @@ const TransactionReport = () => {
                     <tr key={index}>
                       <td className="py-2 px-4 border">{item.flourType}</td>
                       <td className="py-2 px-4 border">{item.quantity}</td>
+                      <td className="py-2 px-4 border">{formatCurrency(item.totalAmount)}</td>
                       <td className="py-2 px-4 border text-green-600">{formatCurrency(item.revenue)}</td>
                       <td className="py-2 px-4 border">{item.electricityUnits}</td>
                     </tr>
@@ -731,6 +747,7 @@ const TransactionReport = () => {
                 <tr className="font-bold">
                   <td className="py-2 px-4 border">Week Total</td>
                   <td className="py-2 px-4 border">{selectedWeek.totalQuantity}</td>
+                  <td className="py-2 px-4 border">{formatCurrency(selectedWeek.totalAmount)}</td>
                   <td className="py-2 px-4 border text-green-600">{formatCurrency(selectedWeek.revenue)}</td>
                   <td className="py-2 px-4 border">{selectedWeek.totalElectricity}</td>
                 </tr>
@@ -747,6 +764,7 @@ const TransactionReport = () => {
             <tr>
               <th className="py-2 px-4 border">Flour Type</th>
               <th className="py-2 px-4 border">Total Quantity (kg)</th>
+              <th className="py-2 px-4 border">Total Amount</th>
               <th className="py-2 px-4 border">Total Revenue (+30%)</th>
               <th className="py-2 px-4 border">Total Electricity Units</th>
             </tr>
@@ -756,6 +774,7 @@ const TransactionReport = () => {
               <tr key={index}>
                 <td className="py-2 px-4 border">{item.flourType}</td>
                 <td className="py-2 px-4 border">{item.quantity}</td>
+                <td className="py-2 px-4 border">{formatCurrency(item.totalAmount)}</td>
                 <td className="py-2 px-4 border text-green-600">{formatCurrency(item.revenue)}</td>
                 <td className="py-2 px-4 border">{item.electricityUnits}</td>
               </tr>
@@ -764,6 +783,9 @@ const TransactionReport = () => {
               <td className="py-2 px-4 border">Grand Total</td>
               <td className="py-2 px-4 border">
                 {flourSummary.reduce((sum, item) => sum + item.quantity, 0)}
+              </td>
+              <td className="py-2 px-4 border">
+                {formatCurrency(flourSummary.reduce((sum, item) => sum + item.totalAmount, 0))}
               </td>
               <td className="py-2 px-4 border text-green-600">
                 {formatCurrency(flourSummary.reduce((sum, item) => sum + item.revenue, 0))}
