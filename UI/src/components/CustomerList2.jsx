@@ -469,7 +469,7 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
         {!editingId && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            className="bg-green-900 text-white px-4 py-2 rounded hover:bg-green-800"
           >
             Add Customer
           </button>
@@ -484,19 +484,6 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Address*
-                </label>
-                <textarea
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  required
-                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                  rows="3"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
                   Name*
                 </label>
                 <input
@@ -506,6 +493,19 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
                   onChange={handleInputChange}
                   required
                   className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Address*
+                </label>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                  rows="3"
                 />
               </div>
               <div>
@@ -549,19 +549,6 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Address*
-                </label>
-                <textarea
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  required
-                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                  rows="3"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">
                   Name*
                 </label>
                 <input
@@ -571,6 +558,19 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
                   onChange={handleInputChange}
                   required
                   className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Address*
+                </label>
+                <textarea
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                  rows="3"
                 />
               </div>
               <div>
@@ -623,11 +623,11 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
             >
               <div className="flex justify-between items-start">
                 <div>
+                  <div className="font-semibold">{customer.name}</div>
+                  <div className="text-sm text-gray-600">{customer.phone}</div>
                   <div className="text-sm text-gray-500">
                     {customer.address}
                   </div>
-                  <div className="font-semibold">{customer.name}</div>
-                  <div className="text-sm text-gray-600">{customer.phone}</div>
                 </div>
                 <div className="flex space-x-2">
                   <button

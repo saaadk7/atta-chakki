@@ -113,6 +113,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CustomerTransactionView from "../components/CustomerTransactionView";
 import api from "../services/api";
+import TransactionReport from "../components/TransactionReport";
 
 const Dashboard = () => {
   const [customers, setCustomers] = useState([]);
@@ -288,6 +289,10 @@ const Dashboard = () => {
         refreshData={refreshData}
         isLoading={loading}
       />
+     <TransactionReport 
+     
+     />
+
     </div>
   );
 };

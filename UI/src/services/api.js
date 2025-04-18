@@ -17,6 +17,7 @@ const api = {
   deleteCustomer: (id) => API.delete(`/customers/${id}`),
 
   // Transactions
+  getAllTransactions: () => API.get("/transactions"),
   getTransactionsByCustomer: (id) => API.get(`/transactions/${id}`),
   getTransactionById: (id) => API.get(`/transactions/${id}`),
   addTransaction: (data) => API.post("/transactions", data),

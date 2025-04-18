@@ -609,7 +609,7 @@ const TransactionList = ({ customerId }) => {
         {!editingId && customerId && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            className="bg-green-900 text-white px-4 py-2 rounded hover:bg-green-800"
           >
             Add Transaction
           </button>
@@ -621,7 +621,7 @@ const TransactionList = ({ customerId }) => {
           onSubmit={editingId ? handleUpdate : handleAdd}
           className="mb-4 space-y-4"
         >
-          <input
+          {/* <input
             type="text"
             name="flourType"
             value={formData.flourType}
@@ -629,7 +629,22 @@ const TransactionList = ({ customerId }) => {
             placeholder="Flour Type"
             className="border p-2 w-full"
             required
-          />
+          /> */}
+          <select
+            name="flourType"
+            value={formData.flourType}
+            onChange={handleInputChange}
+            className="border p-2 w-full"
+            required
+          >
+            <option value="">Select Flour Type</option>
+            <option value="Wheat Flour">Wheat Flour</option>
+            <option value="Jawar Flour">Jawar Flour</option>
+            <option value="Bajra Flour">Bajra Flour</option>
+            <option value="Chilly Powder">Chilly Powder</option>
+            <option value="Mung">Mung</option>
+            <option value="Makka">Makka</option>
+          </select>
           <input
             type="datetime-local"
             name="inTime"
