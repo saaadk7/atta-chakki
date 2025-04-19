@@ -108,7 +108,7 @@ const LoginForm = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`group relative w-20 flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
                 loading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
@@ -142,6 +142,16 @@ const LoginForm = () => {
             </button>
           </div>
         </form>
+        <div className="pt-4 text-center text-xs text-gray-400">
+          © {new Date().getFullYear()} All rights reserved by{" "}
+          {/* <span>mdsuffu</span> */}
+          <a
+            href="https://sofiyan.vercel.app/"
+            className="font-semibold text-indigo-600"
+          >
+            mdsuffu
+          </a>
+        </div>
       </div>
     </div>
   );

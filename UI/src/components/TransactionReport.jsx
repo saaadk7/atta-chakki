@@ -560,10 +560,10 @@ const TransactionReport = () => {
     // Transactions table
     doc.autoTable({
       startY: doc.lastAutoTable.finalY + 15,
-      head: [["ID", "Customer", "Flour Type", "Date", "Qty (kg)", "Unit Price", "Amount", "Revenue (30%)"]],
+      head: [[ "Flour Type", "Date", "Qty (kg)", "Unit Price", "Amount", "Revenue (30%)"]],
       body: week.transactions.map(txn => [
-        txn.id,
-        txn.customerName,
+        // txn.id,
+        // txn.customerName,
         txn.flourType,
         formatDateTime(txn.inTime || txn.outTime),
         txn.quantity,
