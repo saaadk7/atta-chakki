@@ -9,8 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+//@RequestMapping("/api")
 //@CrossOrigin
+@CrossOrigin(origins = "*")
 public class CustomerController {
 
     @Autowired
@@ -38,5 +39,10 @@ public class CustomerController {
     @GetMapping("/customers/{id}")
     public Optional<Customer> getById(@PathVariable Long id){
         return customerService.getCustomerById(id);
+    }
+
+    @DeleteMapping("/customers/{id}")
+    public void deleteCustomer(@PathVariable Long id){
+        customerService.deleteCustomer(id);
     }
 }

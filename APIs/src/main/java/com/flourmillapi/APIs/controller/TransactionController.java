@@ -11,17 +11,18 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api")
+//@RequestMapping("/api")
 //@RequestMapping("/transactions")
 public class TransactionController {
 
     @Autowired
+
     private TransactionService transactionService;
 
     // 1. its call the service layer to add or update the transaction of the customer
     @PostMapping("/transactions")
-    public void addTransaction(@RequestBody Transaction tn){
-         transactionService.addTransaction(tn);
+    public Transaction addTransaction(@RequestBody Transaction tn){
+       return   transactionService.addTransaction(tn);
     }
 
 
@@ -37,5 +38,14 @@ public class TransactionController {
     @GetMapping("/transactions/{customerId}")
     public List<Transaction> getCustomerById(@PathVariable Long customerId){
         return transactionService.getCustomerByCustomerId(customerId);
+    }
+    @GetMapping("/transactions")
+    public List<Transaction> getransaction(){
+        return  transactionService.getTransaction();
+    }
+
+    @DeleteMapping("/transactions/{tranId}")
+    public void deleteTransaction(@PathVariable Long tranId){
+        transactionService.deleteTransaction(tranId);
     }
 }
