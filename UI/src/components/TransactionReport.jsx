@@ -387,8 +387,6 @@
 // };
 
 // export default TransactionReport;
-
-
 import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import jsPDF from "jspdf";
@@ -430,16 +428,16 @@ const TransactionReport = () => {
       if (!flourSummary[txn.flourType]) {
         flourSummary[txn.flourType] = {
           quantity: 0,
-          revenue: 0,
           totalAmount: 0,
+          revenue: 0,
           electricityUnits: 0
         };
       }
       const transactionAmount = parseFloat(txn.quantity) * parseFloat(txn.unitPrice);
-      const transactionRevenue = transactionAmount * 1.3;
+      const transactionRevenue = transactionAmount * 0.3; // 30% of total amount
       flourSummary[txn.flourType].quantity += parseFloat(txn.quantity);
-      flourSummary[txn.flourType].revenue += transactionRevenue;
       flourSummary[txn.flourType].totalAmount += transactionAmount;
+      flourSummary[txn.flourType].revenue += transactionRevenue;
       flourSummary[txn.flourType].electricityUnits += Math.floor(parseFloat(txn.quantity) / 5);
       
       // Weekly summary
@@ -450,23 +448,23 @@ const TransactionReport = () => {
           endDate: getEndOfWeek(date),
           transactions: [],
           totalQuantity: 0,
-          revenue: 0,
           totalAmount: 0,
+          revenue: 0,
           totalElectricity: 0
         };
       }
       weeklyData[weekNumber].transactions.push(txn);
       weeklyData[weekNumber].totalQuantity += parseFloat(txn.quantity);
-      weeklyData[weekNumber].revenue += transactionRevenue;
       weeklyData[weekNumber].totalAmount += transactionAmount;
+      weeklyData[weekNumber].revenue += transactionRevenue;
       weeklyData[weekNumber].totalElectricity += Math.floor(parseFloat(txn.quantity) / 5);
     });
 
     setFlourSummary(Object.keys(flourSummary).map(flourType => ({
       flourType,
       quantity: flourSummary[flourType].quantity,
-      revenue: flourSummary[flourType].revenue,
       totalAmount: flourSummary[flourType].totalAmount,
+      revenue: flourSummary[flourType].revenue,
       electricityUnits: flourSummary[flourType].electricityUnits
     })));
 
@@ -552,7 +550,7 @@ const TransactionReport = () => {
       body: [
         ["Total Quantity Processed", `${week.totalQuantity} kg`],
         ["Total Amount", formatCurrency(week.totalAmount)],
-        ["Total Revenue (including 30%)", formatCurrency(week.revenue)],
+        ["Revenue (30% of amount)", formatCurrency(week.revenue)],
         ["Total Electricity Units", `${week.totalElectricity} units (5kg = 1 unit)`]
       ],
       styles: { fontSize: 12 },
@@ -562,7 +560,7 @@ const TransactionReport = () => {
     // Transactions table
     doc.autoTable({
       startY: doc.lastAutoTable.finalY + 15,
-      head: [["ID", "Customer", "Flour Type", "Date", "Qty (kg)", "Unit Price", "Amount", "Revenue"]],
+      head: [["ID", "Customer", "Flour Type", "Date", "Qty (kg)", "Unit Price", "Amount", "Revenue (30%)"]],
       body: week.transactions.map(txn => [
         txn.id,
         txn.customerName,
@@ -571,7 +569,7 @@ const TransactionReport = () => {
         txn.quantity,
         formatCurrency(txn.unitPrice),
         formatCurrency(txn.unitPrice * txn.quantity),
-        formatCurrency(txn.unitPrice * txn.quantity * 1.3)
+        formatCurrency(txn.unitPrice * txn.quantity * 0.3)
       ]),
       styles: { fontSize: 8 },
       headStyles: { fillColor: [70, 70, 70] }
@@ -589,7 +587,7 @@ const TransactionReport = () => {
         };
       }
       const transactionAmount = parseFloat(txn.quantity) * parseFloat(txn.unitPrice);
-      const transactionRevenue = transactionAmount * 1.3;
+      const transactionRevenue = transactionAmount * 0.3;
       flourSummaryForWeek[txn.flourType].quantity += parseFloat(txn.quantity);
       flourSummaryForWeek[txn.flourType].amount += transactionAmount;
       flourSummaryForWeek[txn.flourType].revenue += transactionRevenue;
@@ -598,7 +596,7 @@ const TransactionReport = () => {
 
     doc.autoTable({
       startY: doc.lastAutoTable.finalY + 15,
-      head: [["Flour Type", "Qty (kg)", "Amount", "Revenue (+30%)", "Electricity Units"]],
+      head: [["Flour Type", "Qty (kg)", "Amount", "Revenue (30%)", "Electricity Units"]],
       body: Object.keys(flourSummaryForWeek).map(flourType => [
         flourType,
         flourSummaryForWeek[flourType].quantity,
@@ -677,7 +675,7 @@ const TransactionReport = () => {
               <p className="text-2xl font-bold">{formatCurrency(selectedWeek.totalAmount)}</p>
             </div>
             <div className="bg-white p-4 rounded shadow">
-              <h4 className="font-medium text-gray-500">Total Revenue (+30%)</h4>
+              <h4 className="font-medium text-gray-500">Revenue (30%)</h4>
               <p className="text-2xl font-bold text-green-600">
                 {formatCurrency(selectedWeek.revenue)}
               </p>
@@ -698,7 +696,7 @@ const TransactionReport = () => {
                   <th className="px-4 py-3">Quantity (kg)</th>
                   <th className="px-4 py-3">Unit Price</th>
                   <th className="px-4 py-3">Amount</th>
-                  <th className="px-4 py-3">Revenue (+30%)</th>
+                  <th className="px-4 py-3">Revenue (30%)</th>
                 </tr>
               </thead>
               <tbody>
@@ -710,7 +708,7 @@ const TransactionReport = () => {
                     <td className="px-4 py-3">{formatCurrency(txn.unitPrice)}</td>
                     <td className="px-4 py-3">{formatCurrency(txn.unitPrice * txn.quantity)}</td>
                     <td className="px-4 py-3 text-green-600">
-                      {formatCurrency(txn.unitPrice * txn.quantity * 1.3)}
+                      {formatCurrency(txn.unitPrice * txn.quantity * 0.3)}
                     </td>
                   </tr>
                 ))}
@@ -726,7 +724,7 @@ const TransactionReport = () => {
                   <th className="py-2 px-4 border">Flour Type</th>
                   <th className="py-2 px-4 border">Quantity (kg)</th>
                   <th className="py-2 px-4 border">Total Amount</th>
-                  <th className="py-2 px-4 border">Revenue (+30%)</th>
+                  <th className="py-2 px-4 border">Revenue (30%)</th>
                   <th className="py-2 px-4 border">Electricity Units</th>
                 </tr>
               </thead>
@@ -765,7 +763,7 @@ const TransactionReport = () => {
               <th className="py-2 px-4 border">Flour Type</th>
               <th className="py-2 px-4 border">Total Quantity (kg)</th>
               <th className="py-2 px-4 border">Total Amount</th>
-              <th className="py-2 px-4 border">Total Revenue (+30%)</th>
+              <th className="py-2 px-4 border">Revenue (30%)</th>
               <th className="py-2 px-4 border">Total Electricity Units</th>
             </tr>
           </thead>
