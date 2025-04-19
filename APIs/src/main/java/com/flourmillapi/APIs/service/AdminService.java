@@ -5,6 +5,7 @@ import com.flourmillapi.APIs.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,5 +23,14 @@ public class AdminService {
         // 6. if the input username not founded its shows empty or if the password not correct then its shows Exception
         return adminrepo.findByUsername(username)
                 .filter(admin -> admin.getPassword().equals(password));
+    }
+
+    public Optional<Admin> addAdmin(Admin admin) {
+        adminrepo.save(admin);
+        return null;
+    }
+
+    public List<Admin> getAdmin() {
+        return adminrepo.findAll();
     }
 }

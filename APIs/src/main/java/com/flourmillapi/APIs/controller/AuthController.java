@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,5 +29,16 @@ public class AuthController {
     public Optional<Admin> login(@RequestBody Admin loginData){
         return adminService.login(loginData.getUsername(), loginData.getPassword());
     }
+
+    @PostMapping("/login/add")
+    public Optional<Admin> addAdmin(@RequestBody Admin admin){
+       return  adminService.addAdmin(admin);
+    }
+
+    @GetMapping("/getAllAdmin")
+    public List<Admin> getAdmin(){
+        return adminService.getAdmin();
+    }
+
 
 }
