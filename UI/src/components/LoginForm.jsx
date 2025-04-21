@@ -1,8 +1,6 @@
-
-// LoginForm.jsx
-// File: LoginForm.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2"; // SweetAlert for attractive messages
 import api from "../services/api";
 
 const LoginForm = () => {
@@ -22,57 +20,45 @@ const LoginForm = () => {
     }));
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-  //   setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  //   try {
-  //     const response = await api.login(formData.username, formData.password);
+    try {
+      const response = await api.login(formData.username, formData.password);
 
-  //     // Check if response contains admin data (adjust based on your actual API response)
-  //     if (response.data) {
-  //       localStorage.setItem("admin", JSON.stringify(response.data));
-  //       // navigate("/dashboard");
-  //       navigate("/dashboard", { replace: true });
-  //     } else {
-  //       setError("Invalid username or password");
-  //     }
-  //   } catch (err) {
-  //     setError("Login failed. Please try again.");
-  //     console.error("Login error:", err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
+      if (response.data) {
+        const { superAdmin, status } = response.data;
 
-  try {
-    const response = await api.login(formData.username, formData.password);
+        // If admin is deactivated
+        if (!status) {
+          Swal.fire({
+            icon: "error",
+            title: "Account Deactivated",
+            text: "Your account has been deactivated by the Super Admin. You cannot log in.",
+          });
+          return;
+        }
 
-    if (response.data) {
-      const { superAdmin } = response.data;
+        // Save the full response (can include ID, username, etc.)
+        localStorage.setItem("admin", JSON.stringify(response.data));
 
-      // Save the full response (can include ID, username, etc.)
-      localStorage.setItem("admin", JSON.stringify(response.data));
+        // Store superAdmin status separately for easy checking
+        localStorage.setItem("superAdmin", superAdmin ? "true" : "false");
 
-      // Store superAdmin status separately for easy checking
-      localStorage.setItem("superAdmin", superAdmin ? "true" : "false");
-
-      navigate("/dashboard", { replace: true });
-    } else {
-      setError("Invalid username or password");
+        navigate("/dashboard", { replace: true });
+      } else {
+        setError("Invalid username or password");
+      }
+    } catch (err) {
+      setError("Login failed. Please try again.");
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    setError("Login failed. Please try again.");
-    console.error("Login error:", err);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
@@ -171,7 +157,6 @@ const handleSubmit = async (e) => {
         </form>
         <div className="pt-4 text-center text-xs text-gray-400">
           © {new Date().getFullYear()} All rights reserved by{" "}
-          {/* <span>mdsuffu</span> */}
           <a
             href="https://sofiyan.vercel.app/"
             className="font-semibold text-indigo-600"
