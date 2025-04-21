@@ -33,6 +33,7 @@ const AdminList = () => {
             <tr className="bg-gray-100">
               <th className="border border-gray-300 px-4 py-2">ID</th>
               <th className="border border-gray-300 px-4 py-2">Name</th>
+              <th className="border border-gray-300 px-4 py-2">Super Admin</th>
             </tr>
           </thead>
           <tbody>
@@ -41,6 +42,9 @@ const AdminList = () => {
                 <td className="border border-gray-300 px-4 py-2">{admin.id}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   {admin.username}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {admin.superAdmin ? "Yes" : "No"}
                 </td>
                 
               </tr>
