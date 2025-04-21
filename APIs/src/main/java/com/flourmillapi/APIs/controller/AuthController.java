@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-
 //@RequestMapping("/api/auth")
 //@RequestMapping("/api/admin")
 
@@ -35,9 +34,19 @@ public class AuthController {
        return  adminService.addAdmin(admin);
     }
 
-    @GetMapping("/getAllAdmin")
+    @GetMapping("/getAllAdmins")
     public List<Admin> getAdmin(){
         return adminService.getAdmin();
+    }
+
+    @PutMapping("/updateAdmin/{id}")
+    public Admin updateAdmin(@PathVariable Long id,@RequestBody Admin admin){
+        return adminService.updateAdmin(id,admin);
+    }
+
+    @DeleteMapping("/admin/{id}")
+    public void deleteAdmin(@PathVariable Long id){
+        adminService.deleteAdmin(id);
     }
 
 

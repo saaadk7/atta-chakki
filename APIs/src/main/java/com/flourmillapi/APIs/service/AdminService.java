@@ -33,4 +33,25 @@ public class AdminService {
     public List<Admin> getAdmin() {
         return adminrepo.findAll();
     }
+
+    public Admin updateAdmin(Long id, Admin admin) {
+       Optional<Admin> existAdmin = adminrepo.findById(id);
+       if(existAdmin.isPresent()){
+           Admin updatedAdmin = existAdmin.get();
+           updatedAdmin.setUsername(admin.getUsername());
+           return  adminrepo.save(updatedAdmin);
+    }
+        return null;
+    }
+
+    public void deleteAdmin(Long id) {
+        Optional<Admin> existAdmin = adminrepo.findById(id);
+        if(existAdmin.isPresent()){
+            Admin updateAdmin = existAdmin.get();
+            if(updateAdmin.isSuperAdmin()==false){
+                adminrepo.deleteById(id);
+            }
+
+        }
+    }
 }
