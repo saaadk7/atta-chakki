@@ -39,6 +39,7 @@ public class AdminService {
        if(existAdmin.isPresent()){
            Admin updatedAdmin = existAdmin.get();
            updatedAdmin.setUsername(admin.getUsername());
+           updatedAdmin.setStatus(admin.isStatus());
            return  adminrepo.save(updatedAdmin);
     }
         return null;
