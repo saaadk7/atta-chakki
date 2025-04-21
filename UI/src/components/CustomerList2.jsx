@@ -32,6 +32,8 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
     loadCustomers();
   }, []);
 
+
+
   const showNotification = (message, type = "success") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 3000);
@@ -54,6 +56,8 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
       showNotification("Failed to add customer", "error");
     }
   };
+
+
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -354,3 +358,5 @@ const CustomerList = ({ onSelectCustomer, selectedCustomerId }) => {
 };
 
 export default CustomerList;
+
+

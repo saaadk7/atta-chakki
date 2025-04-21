@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import Swal from "sweetalert2";
@@ -10,9 +12,8 @@ const AdminList = () => {
     api
       .getAllAdmins()
       .then((res) => {
-        // Sort by id (ascending)
-        const sortedAdmins = res.data.sort((a, b) => a.id - b.id);
-        setAdmins(sortedAdmins);
+        const sorted = res.data.sort((a, b) => a.id - b.id);
+        setAdmins(sorted);
         setLoading(false);
       })
       .catch((err) => {
@@ -62,53 +63,69 @@ const AdminList = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-4">Admin List</h2>
+      <h2 className="text-2xl font-bold mb-4 text-left">Admin List</h2>
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-center">Loading...</p>
       ) : admins.length === 0 ? (
-        <p>No admins found.</p>
+        <p className="text-center">No admins found.</p>
       ) : (
         <table className="w-full border-collapse border border-gray-300 shadow-md rounded-lg overflow-hidden">
           <thead>
             <tr className="bg-blue-100 text-blue-900">
-              <th className="border border-gray-300 px-4 py-2">ID</th>
-              <th className="border border-gray-300 px-4 py-2">Username</th>
-              <th className="border border-gray-300 px-4 py-2">Super Admin</th>
-              <th className="border border-gray-300 px-4 py-2">Status</th>
-              <th className="border border-gray-300 px-4 py-2">Action</th>
+              <th className="border border-gray-300 px-4 py-2 w-16">ID</th>
+              <th className="border border-gray-300 px-4 py-2 w-48">
+                Username
+              </th>
+              <th className="border border-gray-300 px-4 py-2 w-32">
+                Super Admin
+              </th>
+              <th className="border border-gray-300 px-4 py-2 w-32">Status</th>
+              <th className="border border-gray-300 px-4 py-2 w-32">Action</th>
             </tr>
           </thead>
           <tbody>
             {admins.map((admin) => (
-              <tr key={admin.id} className="hover:bg-gray-50">
+              <tr key={admin.id} className="hover:bg-gray-50 text-center">
                 <td className="border border-gray-300 px-4 py-2">{admin.id}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   {admin.username}
                 </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
+                <td className="border border-gray-300 px-4 py-2">
                   {admin.superAdmin ? "Yes" : "No"}
                 </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
-                  <button
-                    onClick={() =>
-                      handleToggleStatus(admin.id, admin.superAdmin)
-                    }
-                    className={`px-4 py-1 rounded-full text-white text-sm font-semibold ${
-                      admin.superAdmin
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : admin.status
-                        ? "bg-green-500 hover:bg-green-600"
-                        : "bg-red-500 hover:bg-red-600"
-                    }`}
-                    disabled={admin.superAdmin}
-                  >
-                    {admin.status ? "Active" : "Deactive"}
-                  </button>
+                <td className="border border-gray-300 px-4 py-2">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={admin.status}
+                      onChange={() =>
+                        handleToggleStatus(admin.id, admin.superAdmin)
+                      }
+                      disabled={admin.superAdmin}
+                      className="sr-only peer"
+                    />
+                    <div
+                      className={`w-11 h-6 rounded-full peer 
+                        transition-colors duration-300 
+                        ${
+                          admin.superAdmin
+                            ? "bg-gray-400"
+                            : admin.status
+                            ? "bg-green-500 peer-checked:bg-green-600"
+                            : "bg-red-500 peer-checked:bg-green-500"
+                        }`}
+                    ></div>
+                    <div
+                      className={`absolute left-0 top-0.5 ml-1 w-4 h-4 bg-white rounded-full shadow-md 
+                        transition-transform duration-300 transform 
+                        peer-checked:translate-x-5`}
+                    ></div>
+                  </label>
                 </td>
-                <td className="border border-gray-300 px-4 py-2 text-center">
+                <td className="border border-gray-300 px-4 py-2">
                   <button
                     onClick={() => handleDelete(admin.id, admin.superAdmin)}
-                    className={`px-4 py-1 rounded text-sm font-semibold ${
+                    className={`px-3 py-1 text-sm rounded ${
                       admin.superAdmin
                         ? "bg-gray-400 text-white cursor-not-allowed"
                         : "bg-red-500 text-white hover:bg-red-600"
