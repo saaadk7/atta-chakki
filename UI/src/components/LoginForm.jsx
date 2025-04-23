@@ -1,4 +1,3 @@
-
 // LoginForm.jsx
 // File: LoginForm.jsx
 import React, { useState } from "react";
@@ -30,17 +29,19 @@ const LoginForm = () => {
     try {
       const response = await api.login(formData.username, formData.password);
 
-      // Check if response contains admin data (adjust based on your actual API response)
       if (response.data) {
         localStorage.setItem("admin", JSON.stringify(response.data));
-        // navigate("/dashboard");
         navigate("/dashboard", { replace: true });
       } else {
         setError("Invalid username or password");
       }
     } catch (err) {
-      setError("Login failed. Please try again.");
       console.error("Login error:", err);
+      if (err.response && err.response.data) {
+        setError(err.response.data); // Show detailed message like "Account deactivated"
+      } else {
+        setError("Login failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
