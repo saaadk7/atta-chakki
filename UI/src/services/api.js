@@ -9,6 +9,11 @@ const api = {
   // Auth
   login: (username, password) => API.post("/login", { username, password }),
 
+  //Admins
+  getAllAdmins: () => API.get("/getAllAdmins"),
+  toggleAdminStatus: (id) => API.put(`/toggleAdminStatus/${id}`),
+  deleteAdmin: (id) => API.delete(`/admins/${id}`), // Or your actual delete endpoint
+
   // Customers
   getAllCustomers: () => API.get("/customers"),
   getCustomerById: (id) => API.get(`/customers/${id}`),
