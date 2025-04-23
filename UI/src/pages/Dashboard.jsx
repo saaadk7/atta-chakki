@@ -139,6 +139,8 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("admin");
+    console.log("logout is working");
+
     navigate("/", { replace: true });
   };
 
