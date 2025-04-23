@@ -24,7 +24,7 @@ public class Admin {
     private String password;
     private boolean superAdmin=false;
     private boolean status=true;
-
+//
     public Long getId() {
         return id;
     }
